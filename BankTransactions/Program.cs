@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Data.Sqlite;
 using Microsoft.VisualBasic.FileIO;
 
@@ -10,30 +11,38 @@ namespace BankTransactions
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var manager = new SqliteManager();
+            var reader = new CSVParser("./data/Transactions2014.csv");
+
+            foreach (string[] row in reader)
+            {
+                manager.AddTransaction(row[0], row[1], row[2], row[3], row[4]);
+            }
         }
         
     }
 
     class CSVParser : IEnumerable
     {
-        private readonly List<string[]> _fields;
-        CSVParser(string filePath)
+        private readonly string[][] _fields;
+        public CSVParser(string filePath)
         {
-            _fields = new List<string[]>();
+            var fields = new List<string[]>();
             var parser = new TextFieldParser(filePath);
             parser.TextFieldType = FieldType.Delimited;
             parser.SetDelimiters(",");
             while (!parser.EndOfData)
             {
-                _fields.Add(parser.ReadFields());
+                fields.Add(parser.ReadFields());
             }
+
+            _fields = fields.Skip(1).ToArray();
         }
         public IEnumerator GetEnumerator()
         {
             foreach (var field in _fields)
             {
-                yield return Tuple.Create(field[0], field[1], field[2], field[3], field[4]);
+                yield return field;
             }
         }
     }
