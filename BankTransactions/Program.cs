@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Xml;
 using Microsoft.Data.Sqlite;
 using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
@@ -26,8 +28,10 @@ namespace BankTransactions
             Logger.Info("Starting program");
             
             var manager = new Manager();
-            var reader = new CSVParser("./data/DodgyTransactions2015.csv");
-
+            
+            // var reader = new CSVParser("./data/DodgyTransactions2015.csv");
+            // var reader = new JSONParser("./data/Transactions2013.json");
+            var reader = new XMLParser("./data/Transactions2012.xml");
             foreach (string[] row in reader)
             {
                 manager.AddTransaction(row[0], row[1], row[2], row[3], row[4]);
@@ -38,7 +42,9 @@ namespace BankTransactions
             manager.ListAccount("Sarah T");
             Logger.Info("Program complete :)");
 
+
         }
+        
         
     }
 
@@ -67,12 +73,58 @@ namespace BankTransactions
         }
     }
 
-    class JSONParser
+    class JSONParser : IEnumerable
     {
+        private readonly List<dynamic> _fields;
         public JSONParser(string filePath)
         {
-            dynamic fields = JsonConvert.DeserializeObject("");
+            StreamReader reader = new StreamReader(filePath);
+            string json = reader.ReadToEnd();
+            _fields = JsonConvert.DeserializeObject<List<dynamic>>(json);
+        }
 
+        public IEnumerator GetEnumerator()
+        {
+            foreach (dynamic field in _fields)
+            {
+                string[] value =
+                {
+                    field.Date.ToString(),
+                    field.FromAccount.ToString(),
+                    field.ToAccount.ToString(),
+                    field.Narrative.ToString(),
+                    field.Amount.ToString()
+                };
+                yield return value;
+            }
+        }
+    }
+
+    class XMLParser : IEnumerable
+    {
+        private readonly XmlDocument fields;
+
+        public XMLParser(string filePath)
+        {
+            fields = new XmlDocument();
+            fields.Load(filePath);
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            var parent = fields.DocumentElement.ChildNodes;
+            foreach (XmlNode row in parent)
+            {
+                string[] value =
+                {
+                    row.Attributes["Date"].Value,
+                    row.ChildNodes[2].ChildNodes[0].InnerText,
+                    row.ChildNodes[2].ChildNodes[1].InnerText,
+                    row.ChildNodes[0].InnerText,
+                    row.ChildNodes[1].InnerText
+                };
+                yield return value;
+            }
         }
     }
 }

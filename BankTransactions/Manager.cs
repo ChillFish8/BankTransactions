@@ -23,11 +23,25 @@ namespace BankTransactions
 
         public void AddTransaction(string date, string sender, string recipient, string desc, string amount)
         {
-
             try
             {
-                var transaction = new Transaction(DateTime.Parse(date), GetOrCreateUser(sender),
-                    GetOrCreateUser(recipient), desc, Decimal.Parse(amount));
+                DateTime parsedDate;
+                try
+                {
+                    parsedDate = DateTime.Parse(date);
+                }
+                catch (FormatException)
+                {
+                    parsedDate = DateTime.FromOADate(int.Parse(date));
+                }
+                
+                var transaction = new Transaction(
+                    parsedDate, 
+                    GetOrCreateUser(sender),
+                    GetOrCreateUser(recipient), 
+                    desc, 
+                    Decimal.Parse(amount)
+                    );
                 _users[sender].AddToOutgoing(transaction);
                 _users[recipient].AddToIncoming(transaction);
             }
