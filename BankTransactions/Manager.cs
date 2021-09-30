@@ -9,7 +9,8 @@ namespace BankTransactions
     public class Manager
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
-        private Dictionary<string, User> _users;
+        private readonly Dictionary<string, User> _users;
+
         public Manager()
         {
             _users = new Dictionary<string, User>();
@@ -28,14 +29,14 @@ namespace BankTransactions
                 {
                     parsedDate = DateTime.FromOADate(int.Parse(date));
                 }
-                
+
                 var transaction = new Transaction(
-                    parsedDate, 
+                    parsedDate,
                     GetOrCreateUser(sender),
-                    GetOrCreateUser(recipient), 
-                    desc, 
-                    Decimal.Parse(amount)
-                    );
+                    GetOrCreateUser(recipient),
+                    desc,
+                    decimal.Parse(amount)
+                );
                 _users[sender].AddToOutgoing(transaction);
                 _users[recipient].AddToIncoming(transaction);
             }
@@ -47,8 +48,6 @@ namespace BankTransactions
             {
                 Logger.Fatal($"An unkown exception happened {e}");
             }
-            
-
         }
 
         private User GetOrCreateUser(string name)
@@ -67,7 +66,7 @@ namespace BankTransactions
                 Console.WriteLine("No transactions.");
                 return;
             }
-            
+
             var maybePadBy = _users
                 .Keys
                 .OrderByDescending(item => item.Length)
@@ -103,27 +102,25 @@ namespace BankTransactions
                 .First()
                 .Length
                 .ToString();
-            
+
             var padBySender = userTransactions
                 .Select(item => item.sender.name)
                 .OrderByDescending(item => item.Length)
                 .First()
                 .Length
                 .ToString();
-            
+
             var formatter = $"{{0}} ) {{1,-{padBySender}}} -> {{2,-{padByReceiver}}} | £{{3}} -> '{{4}}'";
-            
+
             foreach (var transaction in userTransactions)
-            {
                 Console.WriteLine(
-                    formatter, 
-                    transaction.date, 
-                    transaction.sender.name, 
+                    formatter,
+                    transaction.date,
+                    transaction.sender.name,
                     transaction.recipient.name,
                     transaction.amount.ToString(CultureInfo.CurrentCulture),
                     transaction.desc
-                    );
-            }
+                );
         }
     }
 }

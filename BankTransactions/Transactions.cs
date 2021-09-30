@@ -6,9 +6,8 @@ namespace BankTransactions
 {
     public class User
     {
-        public string name { get; }
-        private List<Transaction> _outgoing_transactions;
-        private List<Transaction> _incoming_transactions;
+        private readonly List<Transaction> _incoming_transactions;
+        private readonly List<Transaction> _outgoing_transactions;
 
         public User(string name)
         {
@@ -17,11 +16,13 @@ namespace BankTransactions
             this.name = name;
         }
 
+        public string name { get; }
+
         public void AddToOutgoing(Transaction transaction)
         {
             _outgoing_transactions.Add(transaction);
         }
-        
+
         public void AddToIncoming(Transaction transaction)
         {
             _incoming_transactions.Add(transaction);
@@ -32,12 +33,12 @@ namespace BankTransactions
             return _outgoing_transactions.Concat(_incoming_transactions);
         }
 
-        public Decimal GetBalance()
+        public decimal GetBalance()
         {
             var sum = _incoming_transactions
                 .Select(item => item.amount)
                 .Sum();
-            
+
             sum -= _outgoing_transactions
                 .Select(item => item.amount)
                 .Sum();
@@ -45,17 +46,10 @@ namespace BankTransactions
             return sum;
         }
     }
-    
+
     public class Transaction
     {
-        public User sender { get; }
-        public User recipient { get;  }
-        
-        public DateTime date { get; }
-        public string desc { get;  }
-        public Decimal amount { get; }
-
-        public Transaction(DateTime date, User sender, User recipient, string desc, Decimal amount)
+        public Transaction(DateTime date, User sender, User recipient, string desc, decimal amount)
         {
             this.date = date;
             this.sender = sender;
@@ -64,5 +58,11 @@ namespace BankTransactions
             this.amount = amount;
         }
 
+        public User sender { get; }
+        public User recipient { get; }
+
+        public DateTime date { get; }
+        public string desc { get; }
+        public decimal amount { get; }
     }
 }

@@ -11,79 +11,69 @@ using NLog.Targets;
 
 namespace BankTransactions
 {
-    class Program
+    internal class Program
     {
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
-        static void Main(string[] args)
-        {
 
+        private static void Main(string[] args)
+        {
             var config = new LoggingConfiguration();
             var target = new ColoredConsoleTarget();
             config.AddTarget("Logger", target);
             config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, target));
             LogManager.Configuration = config;
-            
+
             Logger.Info("Starting program");
-            
+
             var manager = new Manager();
-            
+
             // var reader = new CSVParser("./data/DodgyTransactions2015.csv");
             // var reader = new JSONParser("./data/Transactions2013.json");
             var reader = new XMLParser("./data/Transactions2012.xml");
-            foreach (string[] row in reader)
-            {
-                manager.AddTransaction(row[0], row[1], row[2], row[3], row[4]);
-            }
+            foreach (string[] row in reader) manager.AddTransaction(row[0], row[1], row[2], row[3], row[4]);
             Logger.Info("Completed all transactions");
 
             manager.ListAll();
             manager.ListAccount("Sarah T");
             Logger.Info("Program complete :)");
-
-
         }
-        
-        
     }
 
-    class CSVParser : IEnumerable
+    internal class CSVParser : IEnumerable
     {
         private readonly string[][] _fields;
+
         public CSVParser(string filePath)
         {
             var fields = new List<string[]>();
             var parser = new TextFieldParser(filePath);
             parser.TextFieldType = FieldType.Delimited;
             parser.SetDelimiters(",");
-            while (!parser.EndOfData)
-            {
-                fields.Add(parser.ReadFields());
-            }
+            while (!parser.EndOfData) fields.Add(parser.ReadFields());
 
             _fields = fields.Skip(1).ToArray();
         }
+
         public IEnumerator GetEnumerator()
         {
-            foreach (var field in _fields)
-            {
-                yield return field;
-            }
+            foreach (var field in _fields) yield return field;
         }
     }
 
-    class JSONParser : IEnumerable
+    internal class JSONParser : IEnumerable
     {
         private readonly List<dynamic> _fields;
+
         public JSONParser(string filePath)
         {
-            StreamReader reader = new StreamReader(filePath);
-            string json = reader.ReadToEnd();
+            var reader = new StreamReader(filePath);
+            var json = reader.ReadToEnd();
             _fields = JsonConvert.DeserializeObject<List<dynamic>>(json);
         }
 
         public IEnumerator GetEnumerator()
         {
-            foreach (dynamic field in _fields)
+            foreach (var field in _fields)
             {
                 string[] value =
                 {
@@ -98,7 +88,7 @@ namespace BankTransactions
         }
     }
 
-    class XMLParser : IEnumerable
+    internal class XMLParser : IEnumerable
     {
         private readonly XmlDocument fields;
 
