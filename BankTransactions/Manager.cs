@@ -6,11 +6,15 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Microsoft.Data.Sqlite;
+using NLog;
+using NLog.Fluent;
+using NLog.Targets;
 
 namespace BankTransactions
 {
     public class Manager
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         private Dictionary<string, User> _users;
         public Manager()
         {
@@ -19,9 +23,24 @@ namespace BankTransactions
 
         public void AddTransaction(string date, string sender, string recipient, string desc, string amount)
         {
-            var transaction = new Transaction(date, GetOrCreateUser(sender), GetOrCreateUser(recipient), desc, amount);
-            _users[sender].AddToOutgoing(transaction);
-            _users[recipient].AddToIncoming(transaction);
+
+            try
+            {
+                var transaction = new Transaction(DateTime.Parse(date), GetOrCreateUser(sender),
+                    GetOrCreateUser(recipient), desc, Decimal.Parse(amount));
+                _users[sender].AddToOutgoing(transaction);
+                _users[recipient].AddToIncoming(transaction);
+            }
+            catch (FormatException e)
+            {
+                Logger.Fatal($"Error adding transaction, invalid transaction data given!\n  {e.Message}");
+            }
+            catch (Exception e)
+            {
+                Logger.Fatal($"An unkown exception happened {e}");
+            }
+            
+
         }
 
         private User GetOrCreateUser(string name)

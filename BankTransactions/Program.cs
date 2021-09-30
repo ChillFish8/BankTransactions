@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Data.Sqlite;
 using Microsoft.VisualBasic.FileIO;
+using Newtonsoft.Json;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
@@ -12,24 +13,31 @@ namespace BankTransactions
 {
     class Program
     {
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         static void Main(string[] args)
         {
+
             var config = new LoggingConfiguration();
-            var target = new FileTarget { FileName = @"./SupportBank.log", Layout = @"${longdate} ${level} - ${logger}: ${message}" };
-            config.AddTarget("File Logger", target);
+            var target = new ColoredConsoleTarget();
+            config.AddTarget("Logger", target);
             config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, target));
             LogManager.Configuration = config;
             
+            Logger.Info("Starting program");
+            
             var manager = new Manager();
-            var reader = new CSVParser("./data/Transactions2014.csv");
+            var reader = new CSVParser("./data/DodgyTransactions2015.csv");
 
             foreach (string[] row in reader)
             {
                 manager.AddTransaction(row[0], row[1], row[2], row[3], row[4]);
             }
-            
+            Logger.Info("Completed all transactions");
+
             manager.ListAll();
-            manager.ListAccount("Todd");
+            manager.ListAccount("Sarah T");
+            Logger.Info("Program complete :)");
+
         }
         
     }
@@ -56,6 +64,15 @@ namespace BankTransactions
             {
                 yield return field;
             }
+        }
+    }
+
+    class JSONParser
+    {
+        public JSONParser(string filePath)
+        {
+            dynamic fields = JsonConvert.DeserializeObject("");
+
         }
     }
 }

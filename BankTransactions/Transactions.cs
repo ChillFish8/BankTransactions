@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NLog;
 
 namespace BankTransactions
 {
@@ -51,17 +52,17 @@ namespace BankTransactions
         public User sender { get; }
         public User recipient { get;  }
         
-        public string date { get; }
+        public DateTime date { get; }
         public string desc { get;  }
         public Decimal amount { get; }
 
-        public Transaction(string date, User sender, User recipient, string desc, string amount)
+        public Transaction(DateTime date, User sender, User recipient, string desc, Decimal amount)
         {
             this.date = date;
             this.sender = sender;
             this.recipient = recipient;
             this.desc = desc;
-            this.amount = Decimal.Parse(amount);
+            this.amount = amount;
         }
 
     }
