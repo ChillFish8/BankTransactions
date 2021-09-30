@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Data.Sqlite;
 using Microsoft.VisualBasic.FileIO;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 
 namespace BankTransactions
 {
@@ -11,6 +14,12 @@ namespace BankTransactions
     {
         static void Main(string[] args)
         {
+            var config = new LoggingConfiguration();
+            var target = new FileTarget { FileName = @"./SupportBank.log", Layout = @"${longdate} ${level} - ${logger}: ${message}" };
+            config.AddTarget("File Logger", target);
+            config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, target));
+            LogManager.Configuration = config;
+            
             var manager = new Manager();
             var reader = new CSVParser("./data/Transactions2014.csv");
 
