@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
+using Newtonsoft.Json;
 using NLog;
 
 namespace BankTransactions
@@ -115,12 +118,29 @@ namespace BankTransactions
             foreach (var transaction in userTransactions)
                 Console.WriteLine(
                     formatter,
-                    transaction.Date,
+                    transaction.Date.ToString(CultureInfo.InvariantCulture),
                     transaction.Sender.Name,
                     transaction.Recipient.Name,
-                    transaction.Amount.ToString(CultureInfo.CurrentCulture),
+                    transaction.Amount.ToString(CultureInfo.InvariantCulture),
                     transaction.Desc
                 );
+        }
+
+        public void Save(string filePath, string name = "transactions.json")
+        {
+            var saveItems = new List<RawTransaction>();
+
+            foreach (var user in _users.Values)
+            {
+                saveItems.AddRange(
+                    user.OutgoingTransactions.Select(
+                        transaction => transaction.ToRaw()
+                        )
+                    );
+            }
+
+            var data = JsonConvert.SerializeObject(saveItems);
+            File.WriteAllText($"{filePath}/{name}", data);
         }
     }
 }

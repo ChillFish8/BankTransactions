@@ -35,6 +35,7 @@ namespace BankTransactions
 
             manager.ListAll();
             manager.ListAccount("Sarah T");
+            manager.Save("./data");
             Logger.Info("Program complete :)");
         }
     }

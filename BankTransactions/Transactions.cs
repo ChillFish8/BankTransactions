@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace BankTransactions
@@ -7,20 +8,20 @@ namespace BankTransactions
     public class User
     {
         private readonly List<Transaction> _incomingTransactions;
-        private readonly List<Transaction> _outgoingTransactions;
+        public List<Transaction> OutgoingTransactions { get; }
+        public string Name { get; }
 
         public User(string name)
         {
-            _outgoingTransactions = new List<Transaction>();
+            OutgoingTransactions = new List<Transaction>();
             _incomingTransactions = new List<Transaction>();
-            this.Name = name;
+            Name = name;
         }
 
-        public string Name { get; }
 
         public void AddToOutgoing(Transaction transaction)
         {
-            _outgoingTransactions.Add(transaction);
+            OutgoingTransactions.Add(transaction);
         }
 
         public void AddToIncoming(Transaction transaction)
@@ -30,7 +31,7 @@ namespace BankTransactions
 
         public IEnumerable<Transaction> GetAllTransactions()
         {
-            return _outgoingTransactions.Concat(_incomingTransactions);
+            return OutgoingTransactions.Concat(_incomingTransactions);
         }
 
         public decimal GetBalance()
@@ -39,7 +40,7 @@ namespace BankTransactions
                 .Select(item => item.Amount)
                 .Sum();
 
-            sum -= _outgoingTransactions
+            sum -= OutgoingTransactions
                 .Select(item => item.Amount)
                 .Sum();
 
@@ -47,6 +48,24 @@ namespace BankTransactions
         }
     }
 
+    public class RawTransaction
+    {
+        public string Date { get; }
+        public string FromAccount { get; }
+        public string ToAccount { get; }
+        public string Narrative { get; }
+        public string Amount { get; }
+
+        public RawTransaction(string date, string fromAccount, string toAccount, string narrative, string amount)
+        {
+            Date = date;
+            FromAccount = fromAccount;
+            ToAccount = toAccount;
+            Narrative = narrative;
+            Amount = amount;
+        }
+    }
+    
     public class Transaction
     {
         public Transaction(DateTime date, User sender, User recipient, string desc, decimal amount)
@@ -57,6 +76,16 @@ namespace BankTransactions
             Desc = desc;
             Amount = amount;
         }
+        public RawTransaction ToRaw()
+        {
+            return new RawTransaction(
+                Date.ToString(CultureInfo.InvariantCulture),
+                Sender.Name,
+                Recipient.Name,
+                Desc,
+                Amount.ToString(CultureInfo.InvariantCulture)
+                );
+        }
 
         public User Sender { get; }
         public User Recipient { get; }
@@ -65,4 +94,6 @@ namespace BankTransactions
         public string Desc { get; }
         public decimal Amount { get; }
     }
+    
+    
 }
