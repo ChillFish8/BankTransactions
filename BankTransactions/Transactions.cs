@@ -50,11 +50,11 @@ namespace BankTransactions
 
     public class RawTransaction
     {
-        public string Date { get; }
-        public string FromAccount { get; }
-        public string ToAccount { get; }
-        public string Narrative { get; }
-        public string Amount { get; }
+        private string Date { get; }
+        private string FromAccount { get; }
+        private string ToAccount { get; }
+        private string Narrative { get; }
+        private string Amount { get; }
 
         public RawTransaction(string date, string fromAccount, string toAccount, string narrative, string amount)
         {
