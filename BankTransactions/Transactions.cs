@@ -6,41 +6,41 @@ namespace BankTransactions
 {
     public class User
     {
-        private readonly List<Transaction> _incoming_transactions;
-        private readonly List<Transaction> _outgoing_transactions;
+        private readonly List<Transaction> _incomingTransactions;
+        private readonly List<Transaction> _outgoingTransactions;
 
         public User(string name)
         {
-            _outgoing_transactions = new List<Transaction>();
-            _incoming_transactions = new List<Transaction>();
-            this.name = name;
+            _outgoingTransactions = new List<Transaction>();
+            _incomingTransactions = new List<Transaction>();
+            this.Name = name;
         }
 
-        public string name { get; }
+        public string Name { get; }
 
         public void AddToOutgoing(Transaction transaction)
         {
-            _outgoing_transactions.Add(transaction);
+            _outgoingTransactions.Add(transaction);
         }
 
         public void AddToIncoming(Transaction transaction)
         {
-            _incoming_transactions.Add(transaction);
+            _incomingTransactions.Add(transaction);
         }
 
         public IEnumerable<Transaction> GetAllTransactions()
         {
-            return _outgoing_transactions.Concat(_incoming_transactions);
+            return _outgoingTransactions.Concat(_incomingTransactions);
         }
 
         public decimal GetBalance()
         {
-            var sum = _incoming_transactions
-                .Select(item => item.amount)
+            var sum = _incomingTransactions
+                .Select(item => item.Amount)
                 .Sum();
 
-            sum -= _outgoing_transactions
-                .Select(item => item.amount)
+            sum -= _outgoingTransactions
+                .Select(item => item.Amount)
                 .Sum();
 
             return sum;
@@ -51,18 +51,18 @@ namespace BankTransactions
     {
         public Transaction(DateTime date, User sender, User recipient, string desc, decimal amount)
         {
-            this.date = date;
-            this.sender = sender;
-            this.recipient = recipient;
-            this.desc = desc;
-            this.amount = amount;
+            Date = date;
+            Sender = sender;
+            Recipient = recipient;
+            Desc = desc;
+            Amount = amount;
         }
 
-        public User sender { get; }
-        public User recipient { get; }
+        public User Sender { get; }
+        public User Recipient { get; }
 
-        public DateTime date { get; }
-        public string desc { get; }
-        public decimal amount { get; }
+        public DateTime Date { get; }
+        public string Desc { get; }
+        public decimal Amount { get; }
     }
 }

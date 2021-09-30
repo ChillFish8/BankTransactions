@@ -97,14 +97,14 @@ namespace BankTransactions
             }
 
             var padByReceiver = userTransactions
-                .Select(item => item.recipient.name)
+                .Select(item => item.Recipient.Name)
                 .OrderByDescending(item => item.Length)
                 .First()
                 .Length
                 .ToString();
 
             var padBySender = userTransactions
-                .Select(item => item.sender.name)
+                .Select(item => item.Sender.Name)
                 .OrderByDescending(item => item.Length)
                 .First()
                 .Length
@@ -115,11 +115,11 @@ namespace BankTransactions
             foreach (var transaction in userTransactions)
                 Console.WriteLine(
                     formatter,
-                    transaction.date,
-                    transaction.sender.name,
-                    transaction.recipient.name,
-                    transaction.amount.ToString(CultureInfo.CurrentCulture),
-                    transaction.desc
+                    transaction.Date,
+                    transaction.Sender.Name,
+                    transaction.Recipient.Name,
+                    transaction.Amount.ToString(CultureInfo.CurrentCulture),
+                    transaction.Desc
                 );
         }
     }
