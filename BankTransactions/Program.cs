@@ -104,12 +104,12 @@ namespace BankTransactions
             var parent = _fields.DocumentElement?.ChildNodes;
             if (parent is null)
                 yield break;
-            
+
             foreach (XmlNode row in parent)
             {
                 if (row is null)
                     continue;
-                
+
                 string[] value =
                 {
                     row.Attributes?["Date"]?.Value,

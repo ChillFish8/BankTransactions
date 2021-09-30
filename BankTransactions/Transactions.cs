@@ -8,8 +8,6 @@ namespace BankTransactions
     public class User
     {
         private readonly List<Transaction> _incomingTransactions;
-        public List<Transaction> OutgoingTransactions { get; }
-        public string Name { get; }
 
         public User(string name)
         {
@@ -17,6 +15,9 @@ namespace BankTransactions
             _incomingTransactions = new List<Transaction>();
             Name = name;
         }
+
+        public List<Transaction> OutgoingTransactions { get; }
+        public string Name { get; }
 
 
         public void AddToOutgoing(Transaction transaction)
@@ -50,12 +51,6 @@ namespace BankTransactions
 
     public class RawTransaction
     {
-        private string Date { get; }
-        private string FromAccount { get; }
-        private string ToAccount { get; }
-        private string Narrative { get; }
-        private string Amount { get; }
-
         public RawTransaction(string date, string fromAccount, string toAccount, string narrative, string amount)
         {
             Date = date;
@@ -64,8 +59,14 @@ namespace BankTransactions
             Narrative = narrative;
             Amount = amount;
         }
+
+        private string Date { get; }
+        private string FromAccount { get; }
+        private string ToAccount { get; }
+        private string Narrative { get; }
+        private string Amount { get; }
     }
-    
+
     public class Transaction
     {
         public Transaction(DateTime date, User sender, User recipient, string desc, decimal amount)
@@ -76,6 +77,14 @@ namespace BankTransactions
             Desc = desc;
             Amount = amount;
         }
+
+        public User Sender { get; }
+        public User Recipient { get; }
+
+        public DateTime Date { get; }
+        public string Desc { get; }
+        public decimal Amount { get; }
+
         public RawTransaction ToRaw()
         {
             return new RawTransaction(
@@ -84,16 +93,7 @@ namespace BankTransactions
                 Recipient.Name,
                 Desc,
                 Amount.ToString(CultureInfo.InvariantCulture)
-                );
+            );
         }
-
-        public User Sender { get; }
-        public User Recipient { get; }
-
-        public DateTime Date { get; }
-        public string Desc { get; }
-        public decimal Amount { get; }
     }
-    
-    
 }

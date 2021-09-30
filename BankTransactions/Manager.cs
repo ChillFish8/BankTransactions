@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using Newtonsoft.Json;
 using NLog;
 
@@ -131,13 +130,11 @@ namespace BankTransactions
             var saveItems = new List<RawTransaction>();
 
             foreach (var user in _users.Values)
-            {
                 saveItems.AddRange(
                     user.OutgoingTransactions.Select(
                         transaction => transaction.ToRaw()
-                        )
-                    );
-            }
+                    )
+                );
 
             var data = JsonConvert.SerializeObject(saveItems);
             File.WriteAllText($"{filePath}/{name}", data);
