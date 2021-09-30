@@ -29,7 +29,7 @@ namespace BankTransactions
 
             // var reader = new CSVParser("./data/DodgyTransactions2015.csv");
             // var reader = new JSONParser("./data/Transactions2013.json");
-            var reader = new XMLParser("./data/Transactions2012.xml");
+            var reader = new XmlParser("./data/Transactions2012.xml");
             foreach (string[] row in reader) manager.AddTransaction(row[0], row[1], row[2], row[3], row[4]);
             Logger.Info("Completed all transactions");
 
@@ -39,11 +39,11 @@ namespace BankTransactions
         }
     }
 
-    internal class CSVParser : IEnumerable
+    internal class CsvParser : IEnumerable
     {
         private readonly string[][] _fields;
 
-        public CSVParser(string filePath)
+        public CsvParser(string filePath)
         {
             var fields = new List<string[]>();
             var parser = new TextFieldParser(filePath);
@@ -60,11 +60,11 @@ namespace BankTransactions
         }
     }
 
-    internal class JSONParser : IEnumerable
+    internal class JsonParser : IEnumerable
     {
         private readonly List<dynamic> _fields;
 
-        public JSONParser(string filePath)
+        public JsonParser(string filePath)
         {
             var reader = new StreamReader(filePath);
             var json = reader.ReadToEnd();
@@ -88,28 +88,34 @@ namespace BankTransactions
         }
     }
 
-    internal class XMLParser : IEnumerable
+    internal class XmlParser : IEnumerable
     {
-        private readonly XmlDocument fields;
+        private readonly XmlDocument _fields;
 
-        public XMLParser(string filePath)
+        public XmlParser(string filePath)
         {
-            fields = new XmlDocument();
-            fields.Load(filePath);
+            _fields = new XmlDocument();
+            _fields.Load(filePath);
         }
 
         public IEnumerator GetEnumerator()
         {
-            var parent = fields.DocumentElement.ChildNodes;
+            var parent = _fields.DocumentElement?.ChildNodes;
+            if (parent is null)
+                yield break;
+            
             foreach (XmlNode row in parent)
             {
+                if (row is null)
+                    continue;
+                
                 string[] value =
                 {
-                    row.Attributes["Date"].Value,
-                    row.ChildNodes[2].ChildNodes[0].InnerText,
-                    row.ChildNodes[2].ChildNodes[1].InnerText,
-                    row.ChildNodes[0].InnerText,
-                    row.ChildNodes[1].InnerText
+                    row.Attributes?["Date"]?.Value,
+                    row.ChildNodes[2]?.ChildNodes[0]?.InnerText,
+                    row.ChildNodes[2]?.ChildNodes[1]?.InnerText,
+                    row.ChildNodes[0]?.InnerText,
+                    row.ChildNodes[1]?.InnerText
                 };
                 yield return value;
             }
