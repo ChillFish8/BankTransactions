@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using Microsoft.Data.Sqlite;
 using NLog;
-using NLog.Fluent;
-using NLog.Targets;
 
 namespace BankTransactions
 {
