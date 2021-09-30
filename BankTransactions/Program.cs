@@ -11,13 +11,15 @@ namespace BankTransactions
     {
         static void Main(string[] args)
         {
-            var manager = new SqliteManager();
+            var manager = new Manager();
             var reader = new CSVParser("./data/Transactions2014.csv");
 
             foreach (string[] row in reader)
             {
                 manager.AddTransaction(row[0], row[1], row[2], row[3], row[4]);
             }
+            
+            manager.ListAll();
         }
         
     }
