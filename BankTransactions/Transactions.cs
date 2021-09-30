@@ -27,14 +27,19 @@ namespace BankTransactions
             _incoming_transactions.Add(transaction);
         }
 
+        public IEnumerable<Transaction> GetAllTransactions()
+        {
+            return _outgoing_transactions.Concat(_incoming_transactions);
+        }
+
         public Decimal GetBalance()
         {
             var sum = _incoming_transactions
-                .Select(item => item.GetAmount())
+                .Select(item => item.amount)
                 .Sum();
             
             sum -= _outgoing_transactions
-                .Select(item => item.GetAmount())
+                .Select(item => item.amount)
                 .Sum();
 
             return sum;
@@ -43,27 +48,21 @@ namespace BankTransactions
     
     public class Transaction
     {
-        private User _sender;
-        private User _recipient;
+        public User sender { get; }
+        public User recipient { get;  }
         
-        private string _date;
-        private string _desc;
-        private Decimal _amount;
+        public string date { get; }
+        public string desc { get;  }
+        public Decimal amount { get; }
 
         public Transaction(string date, User sender, User recipient, string desc, string amount)
         {
-            _date = date;
-            _sender = sender;
-            _recipient = recipient;
-            _desc = desc;
-            _amount = Decimal.Parse(amount);
+            this.date = date;
+            this.sender = sender;
+            this.recipient = recipient;
+            this.desc = desc;
+            this.amount = Decimal.Parse(amount);
         }
 
-        public Decimal GetAmount()
-        {
-            return _amount;
-        }
-        
-        
     }
 }

@@ -59,5 +59,44 @@ namespace BankTransactions
                 Console.WriteLine(line);
             }
         }
+
+        public void ListAccount(string userName)
+        {
+            var user = GetOrCreateUser(userName);
+            var userTransactions = user.GetAllTransactions().ToList();
+            if (userTransactions.Count == 0)
+            {
+                Console.WriteLine("This user has no transactions.");
+                return;
+            }
+
+            var padByReceiver = userTransactions
+                .Select(item => item.recipient.name)
+                .OrderByDescending(item => item.Length)
+                .First()
+                .Length
+                .ToString();
+            
+            var padBySender = userTransactions
+                .Select(item => item.sender.name)
+                .OrderByDescending(item => item.Length)
+                .First()
+                .Length
+                .ToString();
+            
+            var formatter = $"{{0}} ) {{1,-{padBySender}}} -> {{2,-{padByReceiver}}} | £{{3}} -> '{{4}}'";
+            
+            foreach (var transaction in userTransactions)
+            {
+                Console.WriteLine(
+                    formatter, 
+                    transaction.date, 
+                    transaction.sender.name, 
+                    transaction.recipient.name,
+                    transaction.amount.ToString(CultureInfo.CurrentCulture),
+                    transaction.desc
+                    );
+            }
+        }
     }
 }

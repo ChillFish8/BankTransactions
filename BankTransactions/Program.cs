@@ -20,6 +20,7 @@ namespace BankTransactions
             }
             
             manager.ListAll();
+            manager.ListAccount("Todd");
         }
         
     }
